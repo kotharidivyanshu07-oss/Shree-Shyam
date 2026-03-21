@@ -1202,3 +1202,58 @@ footer {
 .location-input-wrap {
   position: relative;
 }
+.form-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 12px;
+  font-size: 0.88rem;
+  color: var(--text-secondary, #555);
+  line-height: 1.5;
+}
+
+.form-check input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  margin-top: 2px;
+  accent-color: var(--primary, #f5a623);
+  cursor: pointer;
+}
+
+.form-check label {
+  cursor: pointer;
+}
+/* Standard styling for the social button to match your others */
+.social-btn.insta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: #333; /* Default icon color */
+  transition: all 0.3s ease;
+}
+
+/* Dark mode fallback */
+[data-theme="dark"] .social-btn.insta-btn {
+  color: #fff;
+}
+
+/* WhatsApp Green Hover Effect */
+.social-btn.wa-btn {
+  color: #333; /* Default icon color */
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .social-btn.wa-btn {
+  color: #fff;
+}
+
+.social-btn.wa-btn:hover {
+  background-color: #25d366;
+  color: white;
+  border-color: #25d366;
+  transform: translateY(
+    -3px
+  ); /* Match the lift effect of the Instagram button */
+}
