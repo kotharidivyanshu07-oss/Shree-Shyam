@@ -5,7 +5,10 @@
   margin: 0;
   padding: 0;
 }
-
+/* Update text color in dark mode so it remains readable */
+[data-theme="dark"] span[onclick="getCurrentLocation()"] {
+  color: #66b3ff !important;
+}
 :root {
   --primary: #0066cc;
   --primary-light: #3385ff;

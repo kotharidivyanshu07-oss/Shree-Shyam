@@ -214,7 +214,7 @@ Jaipur, Haridwar and local cab service 24x7." />
     </div>
   </section>
 
-  <section id="Book">
+  <section id="Contact">
     <div class="contact-wrap">
       <div>
         <div class="section-label reveal">Get In Touch</div>
@@ -264,7 +264,7 @@ Jaipur, Haridwar and local cab service 24x7." />
           </div>
         </div>
       </div>
-
+  <section id="Book">
       <div class="booking-box reveal reveal-delay-2">
         <h3>Quick Booking</h3>
         <p>Fill in your details and we'll confirm your ride instantly.</p>
@@ -343,8 +343,11 @@ Jaipur, Haridwar and local cab service 24x7." />
         <!-- ═══════ CHANGE 2 & 3: LOCATION + MAP + FARE ═══════ -->
         <div class="form-row">
           <div class="form-group">
-            <label>Pickup Location</label>
-            <div class="location-input-wrap">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <label style="margin: 0;">Pickup Location</label>
+    <span onclick="getCurrentLocation()" style="cursor: pointer; font-size: 0.85rem; color: #0066cc; font-weight: 600;">📍 Use Current Location</span>
+  </div>
+  <div class="location-input-wrap">
               <input type="text" id="fpickup" placeholder="From" oninput="searchLocation('pickup', this.value)"
                 autocomplete="off" />
               <div class="autocomplete-dropdown" id="pickup-dropdown" style="display: none"></div>
@@ -425,7 +428,7 @@ Jaipur, Haridwar and local cab service 24x7." />
       </div>
     </div>
   </section>
-
+</section>
   <footer>
     <div class="footer-brand">
       Shree Shyam Cab Service<span>Your Journey, Our Responsibility</span>
@@ -927,6 +930,76 @@ function handleServiceChange() {
       window.open(`https://wa.me/919235584277?text=${msg}`, "_blank");
       showToast("✅ Booking sent via WhatsApp!");
     }
+    /* ─── CURRENT LOCATION DETECTOR ─── */
+      function getCurrentLocation() {
+        if (navigator.geolocation) {
+          showToast("📍 Detecting location...");
+          
+          navigator.geolocation.getCurrentPosition(
+            async (position) => {
+              const lat = position.coords.latitude;
+              const lon = position.coords.longitude;
+              
+              try {
+                // Convert coordinates to a street address using Nominatim (Free)
+                const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`);
+                const data = await res.json();
+                
+                // Format the address nicely (first 3 parts of the address)
+                let shortName = "Current Location";
+                if (data && data.display_name) {
+                  shortName = data.display_name.split(",").slice(0, 3).join(", ");
+                }
+                
+                // Fill the input field
+                document.getElementById("fpickup").value = shortName;
+                
+                // Initialize map if it isn't already
+                if (!map) initMap();
+                
+                // Update the global pickup coordinates
+                pickupCoords = [lat, lon];
+                
+                // Remove old marker and drop a new one
+                if (pickupMarker) pickupMarker.remove();
+                pickupMarker = new mappls.Marker({
+                  map: map,
+                  position: { lat: lat, lng: lon },
+                  popupHtml: `<div><b>Pickup:</b> ${shortName}</div>`
+                });
+                
+                // If drop location is already set, draw the route. Otherwise, just center the map.
+                if (pickupCoords && dropCoords) {
+                  drawRoute();
+                } else {
+                  map.setCenter({ lat: lat, lng: lon });
+                  map.setZoom(15);
+                }
+                
+                showToast("✅ Location found!");
+                
+              } catch (error) {
+                console.error("Geocoding error:", error);
+                showToast("⚠️ Could not fetch street name, but coordinates saved.");
+                // Still set coordinates even if street name fetch fails
+                pickupCoords = [lat, lon];
+                document.getElementById("fpickup").value = "Exact GPS Location Captured";
+              }
+            },
+            (error) => {
+              // Handle cases where the user denies permission or GPS is off
+              if (error.code === 1) {
+                showToast("⚠️ Please allow location access in your browser.");
+              } else {
+                showToast("⚠️ Could not detect location. Please type it manually.");
+              }
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+          );
+        } else {
+          showToast("⚠️ Geolocation is not supported by this browser.");
+        }
+      }
   </script>
 </body>
 
